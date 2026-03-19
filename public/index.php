@@ -198,6 +198,7 @@ if (!function_exists('e')) {
     html{
     background-color: #f7f9fc;
     overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
     background-image: repeating-linear-gradient(
       -45deg,
       #f7f9fc,
@@ -1470,7 +1471,7 @@ if (!function_exists('e')) {
 ----------------------------------------------------------------------*/
 @media (orientation: landscape) and (width: 720px) and (height: 557px){
 
-  html, body{ overscroll-behavior: none; overflow: hidden; height: 100%; }
+  html, body{ overscroll-behavior: none; overflow-y: auto; overflow-x: hidden; }
 
   :root{
     /* ===== CARD knobs (card-only) ===== */
@@ -1556,7 +1557,7 @@ if (!function_exists('e')) {
     and (min-width: 640px) and (max-width: 1024px)
     and (min-height: 361px) and (max-height: 460px) {
 
-    html, body{ overscroll-behavior-x: none; }
+    html, body{ overscroll-behavior-x: none; overflow-y: auto; }
 
     /* T26.1: let it scroll naturally vertically */
     html, body { overflow-y: auto; overflow-x: hidden; }
@@ -1791,7 +1792,7 @@ if (!function_exists('e')) {
   and (min-width: 640px) and (max-width: 799px)
   and (min-height: 361px) and (max-height: 430px){
 
-  html, body{ overscroll-behavior: none; overflow: hidden; height: 100%; }
+  html, body{ overscroll-behavior: none; overflow-y: auto; overflow-x: hidden; }
 
   :root{
     /* ===== knobs ===== */
@@ -1919,7 +1920,7 @@ if (!function_exists('e')) {
     and (min-width: 800px) and (max-width: 830px)
     and (max-height: 380px){
 
-    html, body{ overscroll-behavior: none; overflow: hidden; height: 100%; }
+    html, body{ overscroll-behavior: none; overflow-y: auto; overflow-x: hidden; }
 
     :root{
       /* ===== knobs ===== */
@@ -2011,7 +2012,7 @@ if (!function_exists('e')) {
   ---------------------------------------------------------------------------*/
   @media (orientation: landscape) and (width: 896px) and (height: 414px){
 
-    html, body{ overscroll-behavior: none; overflow: hidden; height: 100%; }
+    html, body{ overscroll-behavior: none; overflow-y: auto; overflow-x: hidden; }
 
     :root{
       /* ===== knobs ===== */
@@ -2104,7 +2105,7 @@ if (!function_exists('e')) {
   --------------------------------------------------------------*/
   @media (orientation: landscape) and (width: 932px) and (height: 430px){
 
-    html, body{ overscroll-behavior: none; overflow: hidden; height: 100%; }
+    html, body{ overscroll-behavior: none; overflow-y: auto; overflow-x: hidden; }
 
     :root{
       /* ===== CARD knobs (do NOT affect footer position) ===== */
@@ -2213,7 +2214,7 @@ if (!function_exists('e')) {
 ----------------------------------------------------------------------*/
 @media (orientation: landscape) and (width: 914px) and (height: 412px){
 
-  html, body{ overscroll-behavior: none; overflow: hidden; height: 100%; }
+  html, body{ overscroll-behavior: none; overflow-y: auto; overflow-x: hidden; }
 
   :root{
     /* ===== CARD knobs (do NOT affect footer position) ===== */
@@ -2265,7 +2266,7 @@ if (!function_exists('e')) {
 ----------------------------------------------------------------------*/
 @media (orientation: landscape) and (width: 915px) and (height: 412px){
 
-  html, body{ overscroll-behavior: none; overflow: hidden; height: 100%; }
+  html, body{ overscroll-behavior: none; overflow-y: auto; overflow-x: hidden; }
 
   :root{
     /* ===== CARD knobs (do NOT affect footer position) ===== */
@@ -2490,7 +2491,78 @@ if (!function_exists('e')) {
     /* T22: prevent background flicker during soft language swap (iPhone SE landscape) */
     html.demo-swap-freeze { contain: none !important; }
   }
-  </style>
+  
+  /* ====== GLOBAL LANDSCAPE OVERRIDE: ALLOW SCROLLING & FIX TYPOGRAPHY ====== */
+  @media (orientation: landscape) and (max-height: 600px) {
+    html, body {
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      height: auto !important;
+      min-height: 100vh !important;
+    }
+    .page-center {
+      height: auto !important;
+      min-height: 100vh !important;
+      padding-top: 20px !important;
+      padding-bottom: 20px !important;
+    }
+    .access-card {
+      height: auto !important;
+      max-height: none !important;
+      padding-bottom: 80px !important;
+      overflow: visible !important;
+      margin: 0 auto !important;
+      transform: none !important;
+    }
+    .col {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      row-gap: 8px !important;
+      width: 100% !important;
+    }
+    #first_name, #last_name, #email, #key_code, label {
+      grid-area: auto !important;
+      text-align: left !important;
+    }
+    label { font-size: 13px !important; margin: 0 0 4px 0 !important; }
+    input[type="text"], input[type="email"] { 
+      height: 38px !important; 
+      font-size: 13px !important; 
+    }
+    .meta-block {
+      transform: none !important;
+      position: relative !important;
+      margin-top: 10px !important;
+    }
+    .title { font-size: 24px !important; margin-top: 24px !important; }
+    .intro { font-size: 14px !important; margin-bottom: 12px !important; }
+    .actions {
+      position: absolute !important;
+      left: 50% !important;
+      bottom: 12px !important;
+      transform: translateX(-50%) !important;
+      margin: 0 !important;
+      display: flex !important;
+      justify-content: center !important;
+    }
+    .btn-submit { font-size: 22px !important; height: 50px !important; line-height: 50px !important; width: 140px !important; }
+    .fs-small, .notice, .helper, .inline-msg { font-size: 11px !important; }
+    .notice { margin: 8px 0 24px 0 !important; line-height: 1.35 !important; }
+    .site-footer {
+      position: relative !important;
+      transform: none !important;
+      padding: 20px 0 !important;
+    }
+    /* Move flags to sticky so they don't break with scroll */
+    .lang-switch {
+      position: absolute !important;
+      top: 10px !important;
+      right: 10px !important;
+    }
+  }
+
+</style>
 </head>
 <body>
   <div class="page-bg" aria-hidden="true"></div>
