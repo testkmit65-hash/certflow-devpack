@@ -138,7 +138,7 @@ if (!function_exists('e')) {
 <html lang="<?= e($lang) ?>">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
   <link rel="preload" as="image" href="/assets/img/landing-bg-desktop.webp" type="image/webp" fetchpriority="high">
   <link rel="preload" as="image" href="/assets/img/landing-bg-mobile.webp" type="image/webp" media="(max-width: 480px)" fetchpriority="high">
   <link rel="prefetch" href="/privacy.php">
@@ -215,6 +215,8 @@ if (!function_exists('e')) {
 
   .page-bg{
     position:fixed; inset:0;
+    width: 100vw; height: 100vh;
+    height: 100dvh;
     background-color: var(--ink-blue);
     background-image: url('/assets/img/landing-bg-desktop.webp'), var(--bg-lqip-desktop);
     background-position: center center, center center;
@@ -809,7 +811,7 @@ if (!function_exists('e')) {
       --card-offset-y: 28px;   /* + down / - up */
 
 
-      --btn-reserved: 110px;     /* space reserved inside card for button/logo area */
+      --btn-reserved: 80px;      /* space reserved inside card for button/logo area */
       --btn-bottom: 12px;        /* NEW: vertical button position (adjust) */
       --fs-btn: 26px;            /* NEW: submit text size (adjust) */
 
@@ -841,8 +843,11 @@ if (!function_exists('e')) {
     }
 
     .page-center{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       min-height: calc(100vh - var(--footer-space));
-      padding: 8px;
+      padding: 50px 8px 8px 8px; /* 50px top guarantees space for flags */
       box-sizing: border-box;
     }
 
@@ -859,7 +864,8 @@ if (!function_exists('e')) {
       border-radius: 22px;
       padding: var(--card-pad);
       padding-bottom: calc(var(--card-pad) + var(--btn-reserved));
-      transform: translateY(var(--card-offset-y));
+      margin: auto 0;
+      transform: none !important;
       box-sizing: border-box;
       overflow-y: visible; /* card + viewport scroll together if ever needed */
     }
@@ -932,11 +938,10 @@ if (!function_exists('e')) {
     }
   }
 
-   /* Prevent “drag-scroll” on typical phones (keeps iPhone SE 320px untouched) */
+   /* Drag-scroll allowed to hide URL bar */
   @media (min-width: 360px) and (max-width: 480px) and (orientation: portrait){
     html, body{
-      overflow: hidden;
-      overscroll-behavior: none;
+      /* let Safari naturally hide toolbars */
     }
   }
 
@@ -952,7 +957,7 @@ if (!function_exists('e')) {
     --card-h: 545px;
     --card-pad: 12px;
 
-    --btn-reserved: 96px;
+    --btn-reserved: 76px;
     --btn-bottom: 10px;
     --fs-btn: 24px;
 
@@ -1167,7 +1172,7 @@ if (!function_exists('e')) {
 
       /* Button + footer spacing */
       --btn-bottom: 10px;       /* button ↔ card bottom */
-      --btn-reserved: 100px;    /* reserved vertical space for button area */
+      --btn-reserved: 80px;     /* reserved vertical space for button area */
       --footer-raise: 10px;     /* space above footer */
     }
 
