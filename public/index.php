@@ -10,8 +10,8 @@ header('Expires: 0');
 if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 
 /* -------------------------------------------------
-   I18N bootstrap (cookie first, then helpers)
-   ------------------------------------------------- */
+ I18N bootstrap (cookie first, then helpers)
+ ------------------------------------------------- */
 (function () {
   $allowed = ['en','de']; $default = 'en';
   $chosen = null;
@@ -46,18 +46,18 @@ if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 
   if (!function_exists('demo_get_lang')) {
     function demo_get_lang(): string { return $GLOBALS['_DEMO_LANG'] ?? 'en'; }
-  }
-  if (!function_exists('t')) {
+    }
+    if (!function_exists('t')) {
     function t(string $key): string {
-      static $T = null;
-      if ($T === null) {
-        $en = [
+        static $T = null;
+        if ($T === null) {
+          $en = [
           'access.subheading'       => 'Enter your details below to claim your free Certificate & Secret Bonus.',
           'field.first_name'        => 'First name *',
           'field.last_name'         => 'Last name *',
           'field.email'             => 'Email *',
           'field.secret_code'       => 'Secret Key Code *',
-          'placeholder.secret_code' => 'Enter your 15-character code (A–Z, 0–9)',
+            'placeholder.secret_code' => 'Enter your 15-character code (A–Z, 0–9)',
           'helper.required'         => 'Kindly complete all required fields marked with *.',
           'btn.submit'              => 'Submit',
           'notice.privacy'          => 'We use the contact details you provide to respond to your requests and to operate our services; marketing emails are sent only if you opt in and you can unsubscribe at any time.',
@@ -68,14 +68,14 @@ if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
           'val.cooldown'            => 'You can resubmit your form in {n} minutes.',
           'overlay.heading'         => 'Your well-deserved reward is being prepared...',
           'overlay.body'            => 'We are preparing your certificate and secret bonus. You will be redirected to the Success page in just a moment.',
-        ];
-        $de = [
+          ];
+          $de = [
           'access.subheading'       => 'Gib unten deine Daten ein, um dein gratis Zertifikat & Geheimen Bonus zu erhalten.',
           'field.first_name'        => 'Vorname *',
           'field.last_name'         => 'Nachname *',
           'field.email'             => 'E-Mail *',
           'field.secret_code'       => 'Geheimer Schlüsselcode *',
-          'placeholder.secret_code' => 'Gib deinen 15-stelligen Code ein (A–Z, 0–9)',
+            'placeholder.secret_code' => 'Gib deinen 15-stelligen Code ein (A–Z, 0–9)',
           'helper.required'         => 'Bitte fülle alle mit * gekennzeichneten Pflichtfelder aus.',
           'btn.submit'              => 'Senden',
           'notice.privacy'          => 'Wir verwenden deine angegebenen Kontaktdaten, um auf deine Anfragen zu reagieren und unsere Dienste zu betreiben; Marketing-E-Mails senden wir nur, wenn du zugestimmt hast, und du kannst dich jederzeit abmelden.',
@@ -86,21 +86,21 @@ if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
           'val.cooldown'            => 'Du kannst das Formular in {n} Minuten erneut senden.',
           'overlay.heading'         => 'Deine wohlverdiente Belohnung wird vorbereitet...',
           'overlay.body'            => 'Wir bereiten dein Zertifikat und deinen geheimen Bonus vor. Du wirst in wenigen Augenblicken zur Erfolgsseite weitergeleitet.',
-        ];
-        $lang = demo_get_lang();
-        $T = ($lang === 'de') ? array_replace($en, $de) : $en;
+          ];
+          $lang = demo_get_lang();
+          $T = ($lang === 'de') ? array_replace($en, $de) : $en;
+        }
+        return $T[$key] ?? $key;
       }
-      return $T[$key] ?? $key;
     }
-  }
-  if (!function_exists('tp')) {
+    if (!function_exists('tp')) {
     function tp(string $key, array $vars): string {
-      $s = t($key);
+        $s = t($key);
       foreach ($vars as $k => $v) $s = str_replace('{'.$k.'}', (string)$v, $s);
-      return $s;
+        return $s;
+      }
     }
-  }
-})();
+  })();
 
 $lang = demo_get_lang();
 
@@ -847,8 +847,21 @@ if (!function_exists('e')) {
       flex-direction: column;
       align-items: center;
       min-height: calc(100vh - var(--footer-space));
-      padding: 50px 8px 8px 8px; /* 50px top guarantees space for flags */
+      padding: 0 8px 8px 8px; /* Handled top padding securely with before pseudo element */
       box-sizing: border-box;
+    }
+
+    /* Safe vertical centering algorithm using solid flex spacers */
+    .page-center::before,
+    .page-center::after {
+      content: "";
+      display: block;
+      flex-grow: 1; /* Automatically absorb surplus empty space exactly equivalent to auto margin */
+    }
+
+    .page-center::before {
+      min-height: 80px; /* Absolutely guarantees space for the flag row at the top */
+      flex-shrink: 0;   /* Top spacer must NEVER be crushed */
     }
 
 /* Better on modern mobile browsers (dynamic viewport) */
@@ -864,7 +877,8 @@ if (!function_exists('e')) {
       border-radius: 22px;
       padding: var(--card-pad);
       padding-bottom: calc(var(--card-pad) + var(--btn-reserved));
-      margin: auto 0;
+      margin: 0 auto; /* Removed potentially faulty vertical auto margin */
+      flex-shrink: 0; /* Ensures the card itself doesn't collapse */
       transform: none !important;
       box-sizing: border-box;
       overflow-y: visible; /* card + viewport scroll together if ever needed */
