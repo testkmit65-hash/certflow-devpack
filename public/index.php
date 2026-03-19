@@ -2515,14 +2515,30 @@ if (!function_exists('e')) {
       transform: none !important;
     }
     .col {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: stretch !important;
-      row-gap: 8px !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-areas:
+        "fnLabel lnLabel"
+        "fnInput lnInput"
+        "emailLabel emailLabel"
+        "emailInput emailInput"
+        "keyLabel keyLabel"
+        "keyInput keyInput"
+        "meta meta" !important;
+      column-gap: 16px !important;
+      row-gap: 10px !important;
       width: 100% !important;
     }
+    label[for="first_name"]{ grid-area: fnLabel !important; }
+    #first_name{ grid-area: fnInput !important; }
+    label[for="last_name"]{ grid-area: lnLabel !important; }
+    #last_name{ grid-area: lnInput !important; }
+    label[for="email"]{ grid-area: emailLabel !important; }
+    #email{ grid-area: emailInput !important; }
+    label[for="key_code"]{ grid-area: keyLabel !important; }
+    #key_code{ grid-area: keyInput !important; }
+    .meta-block{ grid-area: meta !important; }
     #first_name, #last_name, #email, #key_code, label {
-      grid-area: auto !important;
       text-align: left !important;
     }
     label { font-size: 13px !important; margin: 0 0 4px 0 !important; }
@@ -2549,6 +2565,11 @@ if (!function_exists('e')) {
     .btn-submit { font-size: 22px !important; height: 50px !important; line-height: 50px !important; width: 140px !important; }
     .fs-small, .notice, .helper, .inline-msg { font-size: 11px !important; }
     .notice { margin: 8px 0 24px 0 !important; line-height: 1.35 !important; }
+    .card-watermark {
+      height: 48px !important;
+      bottom: 14px !important;
+      right: 18px !important;
+    }
     .site-footer {
       position: relative !important;
       transform: none !important;
