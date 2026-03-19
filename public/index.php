@@ -139,8 +139,7 @@ if (!function_exists('e')) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
-  <link rel="preload" as="image" href="/assets/img/landing-bg-desktop.webp" type="image/webp" fetchpriority="high">
-  <link rel="preload" as="image" href="/assets/img/landing-bg-mobile.webp" type="image/webp" media="(max-width: 480px)" fetchpriority="high">
+  <link rel="prefetch" href="/privacy.php">
   <link rel="prefetch" href="/privacy.php">
   <title><?= e(defined('CHALLENGE_NAME') ? CHALLENGE_NAME : 'Demo Challenge') ?></title>
 
@@ -197,12 +196,15 @@ if (!function_exists('e')) {
   @supports (text-wrap: pretty) { html[lang="de"] .notice { text-wrap: pretty; } }
 
     html{
-    background-color: var(--ink-blue);
+    background-color: #f7f9fc;
     overflow-x: hidden;
-    background-image: url('/assets/img/landing-bg-desktop.webp'), var(--bg-lqip-desktop);
-    background-position: center center, center center;
-    background-size: cover, cover;
-    background-repeat: no-repeat, no-repeat;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #f7f9fc,
+      #f7f9fc 18px,
+      #e2e8f0 18px,
+      #e2e8f0 20px
+    );
   }
 
   body{
@@ -218,11 +220,14 @@ if (!function_exists('e')) {
     position:fixed; inset:0;
     width: 100%; height: 100vh;
     height: 100dvh;
-    background-color: var(--ink-blue);
-    background-image: url('/assets/img/landing-bg-desktop.webp'), var(--bg-lqip-desktop);
-    background-position: center center, center center;
-    background-size: cover, cover;
-    background-repeat: no-repeat, no-repeat;
+    background-color: #f7f9fc;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #f7f9fc,
+      #f7f9fc 18px,
+      #e2e8f0 18px,
+      #e2e8f0 20px
+    );
     z-index:0; pointer-events:none; transform:translateZ(0);
   }
 
@@ -835,12 +840,17 @@ if (!function_exists('e')) {
       --gap-error-notice: 8px;
     }
 
-    /* Use dedicated mobile background */
+    /* Dedicated CSS texture to eliminate baked-in watermarks */
     html,
     .page-bg {
-      background-image: url('/assets/img/landing-bg-mobile.webp'), var(--bg-lqip-mobile);
-      background-position: center, center;
-      background-size: cover, cover;
+      background-color: #f7f9fc;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        #f7f9fc,
+        #f7f9fc 18px,
+        #e2e8f0 18px,
+        #e2e8f0 20px
+      );
     }
 
     .page-center{
@@ -995,12 +1005,17 @@ if (!function_exists('e')) {
     --t28-card-offset-y: 28px;          /* adjust: + down / - up */
   }
 
-  /* Use dedicated mobile background */
+  /* Same CSS texture */
     html,
     .page-bg {
-    background-image: url('/assets/img/landing-bg-mobile.webp'), var(--bg-lqip-mobile);
-    background-position: center, center;
-    background-size: cover, cover;
+      background-color: #f7f9fc;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        #f7f9fc,
+        #f7f9fc 18px,
+        #e2e8f0 18px,
+        #e2e8f0 20px
+      );
   }
 
   .access-card{
@@ -1036,12 +1051,17 @@ if (!function_exists('e')) {
       --footer-raise: var(--t28x-footer-raise);
     }
 
-     /* Use dedicated mobile background */
+     /* Refined diagonal CSS texture */
     html,
     .page-bg {
-      background-image: url('/assets/img/landing-bg-mobile.webp'), var(--bg-lqip-mobile);
-      background-position: center, center;
-      background-size: cover, cover;
+      background-color: #f7f9fc;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        #f7f9fc,
+        #f7f9fc 18px,
+        #e2e8f0 18px,
+        #e2e8f0 20px
+      );
     }
 
     .access-card{
@@ -1058,12 +1078,17 @@ if (!function_exists('e')) {
       --t28xr-card-offset-y: 28px; /* + down / - up */
     }
 
-    /* Use dedicated mobile background */
+    /* Dedicated CSS texture to eliminate baked-in watermarks */
     html,
     .page-bg {
-      background-image: url('/assets/img/landing-bg-mobile.webp'), var(--bg-lqip-mobile);
-      background-position: center, center;
-      background-size: cover, cover;
+      background-color: #f7f9fc;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        #f7f9fc,
+        #f7f9fc 18px,
+        #e2e8f0 18px,
+        #e2e8f0 20px
+      );
     }
 
     .access-card{
@@ -1089,12 +1114,17 @@ if (!function_exists('e')) {
       --footer-raise: var(--t284-footer-raise);
     }
 
-    /* Use dedicated mobile background */
+    /* Dedicated CSS texture to eliminate baked-in watermarks */
     html,
     .page-bg {
-      background-image: url('/assets/img/landing-bg-mobile.webp'), var(--bg-lqip-mobile);
-      background-position: center, center;
-      background-size: cover, cover;
+      background-color: #f7f9fc;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        #f7f9fc,
+        #f7f9fc 18px,
+        #e2e8f0 18px,
+        #e2e8f0 20px
+      );
     }
 
     .access-card{
@@ -1191,12 +1221,17 @@ if (!function_exists('e')) {
       --footer-raise: 10px;     /* space above footer */
     }
 
-    /* Use dedicated mobile background on very small phones */
+    /* Dedicated CSS texture */
     html,
     .page-bg {
-      background-image: url('/assets/img/landing-bg-mobile.webp'), var(--bg-lqip-mobile);
-      background-position: center, center;
-      background-size: cover, cover;
+      background-color: #f7f9fc;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        #f7f9fc,
+        #f7f9fc 18px,
+        #e2e8f0 18px,
+        #e2e8f0 20px
+      );
     }
 
     /* Lock page height so card + footer sit inside the viewport */
