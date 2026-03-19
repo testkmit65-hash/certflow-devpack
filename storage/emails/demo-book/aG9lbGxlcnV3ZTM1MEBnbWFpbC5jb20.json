@@ -1,0 +1,10 @@
+{
+    "email": "hoelleruwe350@gmail.com",
+    "book_id": "demo-book",
+    "status": "success",
+    "reason": "ok",
+    "lang": "en",
+    "attempt_count": 3,
+    "first_seen_at": "2026-03-17T07:44:02+00:00",
+    "last_seen_at": "2026-03-17T07:44:21+00:00"
+}

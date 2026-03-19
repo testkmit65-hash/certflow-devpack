@@ -1,0 +1,18 @@
+CONTRACTOR RULES (summary)
+
+1) Confidentiality
+- This codebase and all assets remain the client's property.
+- Do not share, reuse, resell, or publish any part of it.
+
+2) Allowed work
+- Responsive CSS improvements for phone/tablet portrait & landscape.
+- Keep the existing app flow (Access → Submit → Success).
+- No refactors unless explicitly agreed.
+
+3) No production access
+- You will not receive production hosting, domain, SMTP, or admin account access.
+- All work is done on this sanitized pack or on a staging environment created by the client.
+
+4) Deliverables
+- Provide a clear list of changed files and the exact diff.
+- Provide test notes (device/browser + portrait/landscape) and screenshots/recordings.

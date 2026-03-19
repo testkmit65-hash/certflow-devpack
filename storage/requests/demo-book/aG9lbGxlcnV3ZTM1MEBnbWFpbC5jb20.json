@@ -1,0 +1,13 @@
+{
+    "rid": "aG9lbGxlcnV3ZTM1MEBnbWFpbC5jb20",
+    "book_id": "demo-book",
+    "email": "hoelleruwe350@gmail.com",
+    "first_name": "Uwe",
+    "last_name": "Höller",
+    "full_name": "Uwe Höller",
+    "lang": "en",
+    "cert_path": "/Users/uwehoeller/Desktop/certflow_devpack/storage/certs/demo-book/demo-book_uwe-h-oller-20260317-074421.pdf",
+    "bonus_path": "/Users/uwehoeller/Desktop/certflow_devpack/storage/bonus/demo-book/bonus.pdf",
+    "created_at": "2026-03-17T07:44:25+00:00",
+    "updated_at": "2026-03-17T07:44:25+00:00"
+}

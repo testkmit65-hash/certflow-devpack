@@ -1,0 +1,159 @@
+<?php declare(strict_types=1);
+
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
+
+require_once __DIR__ . '/../code/app/config.php';
+require_once __DIR__ . '/../code/app/lib/Utils.php';
+require_once __DIR__ . '/../code/app/lib/Smtp.php';
+require_once __DIR__ . '/../code/app/Cooldown.php';
+
+use App\Cooldown;
+
+/**
+ * This file is the full submit handler used after inline validation passes.
+ * - Keep the main logic below (validation, key check, JSON save, PDF gen, email, redirect).
+ * - Cooldown checks/marking are already handled in /public/submit.php before calling here.
+ */
+
+// --- keep your existing submit logic BELOW this line ---
+
+$cooldownMessage = '';
+$email = strtolower(trim((string)($_POST['email'] ?? '')));
+if ($email !== '') {
+    // Cooldown logic is handled by /public/submit.php
+    // No need for an additional check here
+    Cooldown::mark($email);
+} else {
+    // Handle error or invalid state here if necessary
+}
+
+// --- keep your existing submit logic below this line (validation, key check, send email, etc.) ---
+
+/**
+ * File: /public_html/challenge/public/submit.php
+ * Handles form submission: validates input, generates certificate PDF,
+ * saves a request JSON row, emails the user, then redirects to success.php.
+ */
+
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
+// error log lives under /storage/logs/php_errors.log (created by config)
+// config may already be loaded by /public/submit.php; require_once is safe
+require_once __DIR__ . '/../code/app/config.php';
+ini_set('error_log', LOGS_DIR . '/php_errors.log');
+
+require_once __DIR__ . '/../code/app/lib/Utils.php';
+require_once __DIR__ . '/../code/app/lib/Smtp.php';
+
+function go_success(string $rid): void {
+    header('Location: success.php?rid=' . urlencode($rid));
+    exit;
+}
+function go_error(string $msg): void {
+    http_response_code(400);
+    echo "<!doctype html><meta charset='utf-8'><body style='font-family:system-ui;margin:2rem'>
+            <h1>There was a problem</h1>
+            <p>" . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . "</p>
+            <p><a href='index.php'>Back to start</a></p></body>";
+    exit;
+}
+
+/* ---------- read & validate form fields ---------- */
+$first = sanitize_name($_POST['first_name'] ?? '');
+$last  = sanitize_name($_POST['last_name'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$key   = trim($_POST['key_code'] ?? '');
+
+if ($first === '' || $last === '' || $email === '') {
+    go_error('Please fill all required fields.');
+}
+if (!validate_key_code($key)) {
+    go_error('Invalid or missing Secret Key Code.');
+}
+
+$keyN = strtoupper(preg_replace('/\s+/', '', $key));
+$expected = defined('SECRET_KEY_CODE') ? SECRET_KEY_CODE : '';
+if ($expected !== '' && !hash_equals($expected, $keyN)) {
+    go_error('Invalid or missing Secret Key Code.');
+}
+
+$rid       = email_key($email);
+$existing  = get_request_by_email($email);
+$full_name = trim($first . ' ' . $last);
+
+/* ---------- if we already have a row for this email, just jump to success ---------- */
+if ($existing) {
+    go_success($rid);
+}
+
+/* ---------- make certificate (fetch PNG from generator, wrap to real PDF) ---------- */
+// Build full name exactly like your form
+$full_name = sanitize_name(trim(($_POST['first_name'] ?? '') . ' ' . ($_POST['last_name'] ?? '')));
+
+// 1) Fetch the PNG from our own generator (same artwork as the preview)
+$tmpPng = ink_fetch_cert_png($full_name, $_POST['date'] ?? null);
+
+// 2) Final PDF path under /storage/certs/<BOOK_ID>/
+$safe     = slug_ascii($full_name) ?: 'certificate';
+$cert_path = CERTS_BOOK_DIR . '/' . sprintf('%s_%s-%s.pdf', BOOK_ID, $safe, date('Ymd-His')); // keep name $cert_path
+
+// 3) Convert PNG → PDF using Dompdf (and clean up)
+if (!$tmpPng || !ink_png_to_pdf($tmpPng, $cert_path)) {
+    go_error('Could not generate certificate PDF. Please try again later.');
+}
+
+/* ---------- determine language + bonus path ---------- */
+
+// Language for persistence (align with confirmation emails)
+$lang = 'en';
+if (isset($_SESSION['lang']) && in_array($_SESSION['lang'], ['en', 'de'], true)) {
+    $lang = $_SESSION['lang'];
+} elseif (isset($_COOKIE['demo_lang']) && in_array($_COOKIE['demo_lang'], ['en', 'de'], true)) {
+    $lang = $_COOKIE['demo_lang'];
+}
+
+// Language-aware bonus path (filesystem path under BONUS_DIR)
+$bonus_path       = BONUS_FILE;          // default shared bonus
+$bonusCandidates  = [];
+
+if ($lang === 'en') {
+    $bonusCandidates[] = BONUS_DIR . '/bonus-en.pdf';
+} elseif ($lang === 'de') {
+    $bonusCandidates[] = BONUS_DIR . '/bonus-de.pdf';
+}
+
+// Always fall back to the existing shared bonus.pdf
+$bonusCandidates[] = BONUS_FILE;
+
+foreach ($bonusCandidates as $candidate) {
+    if (is_string($candidate) && $candidate !== '' && is_file($candidate)) {
+        $bonus_path = $candidate;
+        break;
+    }
+}
+
+/* ---------- persist the request row ---------- */
+$row = [
+    'rid'          => $rid,
+    'book_id'      => BOOK_ID,
+    'email'        => strtolower($email),
+    'first_name'   => $first,
+    'last_name'    => $last,
+    'full_name'    => $full_name,
+    'lang'         => $lang,
+    'cert_path'    => $cert_path,
+    'bonus_path'   => $bonus_path,
+    'created_at'   => date('c'),
+    'updated_at'   => date('c'),
+];
+
+save_request($row);
+
+/* ---------- email confirmation (simple, left-aligned) ---------- */
+send_confirmation_email($email, $first, 'cert_bonus', $rid);
+
+/* ---------- done ---------- */
+go_success($rid);
