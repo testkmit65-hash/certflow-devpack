@@ -198,6 +198,7 @@ if (!function_exists('e')) {
 
     html{
     background-color: var(--ink-blue);
+    overflow-x: hidden;
     background-image: url('/assets/img/landing-bg-desktop.webp'), var(--bg-lqip-desktop);
     background-position: center center, center center;
     background-size: cover, cover;
@@ -215,7 +216,7 @@ if (!function_exists('e')) {
 
   .page-bg{
     position:fixed; inset:0;
-    width: 100vw; height: 100vh;
+    width: 100%; height: 100vh;
     height: 100dvh;
     background-color: var(--ink-blue);
     background-image: url('/assets/img/landing-bg-desktop.webp'), var(--bg-lqip-desktop);
@@ -1298,8 +1299,8 @@ if (!function_exists('e')) {
         /* Lock viewport in this landscape gap (prevents any vertical scroll) */
     html, body{
       height: 100%;
-      overflow: hidden;
-      overscroll-behavior: none;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     :root{
@@ -1520,10 +1521,10 @@ if (!function_exists('e')) {
     and (min-width: 640px) and (max-width: 1024px)
     and (min-height: 361px) and (max-height: 460px) {
 
-    html, body{ overscroll-behavior: none; }
+    html, body{ overscroll-behavior-x: none; }
 
-    /* T26.1: prevent 1–2px rounding overflow causing tiny scroll */
-    html, body { overflow-y: hidden; }
+    /* T26.1: let it scroll naturally vertically */
+    html, body { overflow-y: auto; overflow-x: hidden; }
 
     :root,
     html[lang="en"] :root,
