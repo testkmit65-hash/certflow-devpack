@@ -602,6 +602,7 @@ if (!function_exists('e')) {
     padding: 16px;
     background: rgba(4, 10, 20, 0.78);
     z-index: 12000; /* above flags, footer & other UI */
+    box-sizing: border-box;
   }
   .processing-overlay.is-visible{
     display: flex;
@@ -611,8 +612,7 @@ if (!function_exists('e')) {
   html.processing-lock,
   body.processing-lock{
   overflow: hidden !important;
-  height: 100% !important;
-  touch-action: none;
+  overscroll-behavior: none !important;
   }
 
 /* Make flags unclickable while processing */
@@ -627,9 +627,14 @@ if (!function_exists('e')) {
   .processing-card{
     max-width: 480px;
     width: 100%;
+    max-height: calc(100dvh - 32px); /* ensure it fits on small phones */
+    max-height: calc(100vh - 32px);  /* fallback */
+    overflow-y: auto; /* allow scroll if it still exceeds */
+    overscroll-behavior: contain;
     background: rgba(8, 18, 35, 0.96);
     border-radius: 24px;
     padding: 32px 28px;
+    box-sizing: border-box;
     box-shadow: 0 18px 40px rgba(0,0,0,0.45);
     text-align: center;
     color: #ffffff;
@@ -2494,12 +2499,32 @@ if (!function_exists('e')) {
   
   /* ====== GLOBAL LANDSCAPE OVERRIDE: ALLOW SCROLLING & FIX TYPOGRAPHY ====== */
   @media (orientation: landscape) and (max-height: 600px) {
-    html, body {
+    html:not(.processing-lock), body:not(.processing-lock) {
       overflow-y: auto !important;
       overflow-x: hidden !important;
       height: auto !important;
       min-height: 100vh !important;
     }
+    
+    .processing-card {
+      max-height: calc(100vh - 40px); /* 20px top/bottom padding */
+      overflow-y: auto;
+      padding: 16px 20px;
+    }
+    .processing-card h2 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .processing-card p {
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    .processing-spinner {
+      width: 32px;
+      height: 32px;
+      border-width: 2px;
+    }
+
     .page-center {
       height: auto !important;
       min-height: 100vh !important;
