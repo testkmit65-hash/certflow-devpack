@@ -22,7 +22,7 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
       --bg-lqip-desktop: url("data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAACwBACdASpAACQAPzGGvleuqCYkqBqqqdAmCUAZjmv4AFS0Zi1u7k7bANk/Ih+AAPbiVue6h/oV3Z8Rdn/bzmz28bx/qvNfDmkW5gG1oP7ln9Uuhh+dvvq9WFzf1DrBuZhBQ8mMXyI4bOaO8nD16rZdk1CbWRB7hGwVG4QfS4zKQBHGiZZ/JICpMgAAAA==");
       --bg-lqip-mobile:  url("data:image/webp;base64,UklGRrYAAABXRUJQVlA4IKoAAABwBQCdASokAE4APzGCt1SuqCWjLNgMcdAmCWMAv7AAwxygPWHFpHLD3xupJ+Yqv5FTMTQAAPcDvToZzbX9CvWX302P+onYjxgTkjGijV050Jl6Xk9aXpIVfis6itElg4CvB4Ywz7OvWqKSaM60ViAKdTXPqmxliAnbrqYM45hQddUC9MSqXB7taYcxczhSuiDSaqB1SzvQ/HirHTZgK50/mw8hZxcSeggAAA==");
 
-      --footer-raise: -87.5px;
+      --footer-raise: 0px; 
 
       /* Privacy card header tunables (desktop / default) */
       --policy-logo-height: 38px;    /* logo size */
@@ -128,13 +128,14 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
       border-radius: 30px;
       padding: 40px 60px 48px;
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-      max-height: 80vh;
+      max-height: 75vh;
       overflow-y: auto;
+      overflow-x: hidden;
       position: relative;
       margin-bottom: 20px;
       transform: translateY(var(--card-offset-y));
   
-      clip-path: inset(0 0 0 0 round 30px);
+      /* clip-path: inset(0 0 0 0 round 30px); removed for scrollbar functionality */
     }
 
     /* Style the scrollbar */
@@ -348,7 +349,7 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
     /* Logo: size + position */
     --t27pp-logo-h: 38px;
     --t27pp-logo-top: 0px;
-    --t27pp-logo-right: -152px;
+    --t27pp-logo-right: 40px;
     --t27pp-title-right-reserve: 140px;
 
     /* Header spacing */
@@ -409,6 +410,8 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
   .policy-card{
     max-width: var(--t27pp-card-max-w) !important;   /* makes --t27pp-card-max-w respond */
     max-height: var(--t27pp-card-max-h) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     border-radius: var(--t27pp-card-radius) !important;
     padding: var(--t27pp-card-pad-t) var(--t27pp-card-pad-r) var(--t27pp-card-pad-b) var(--t27pp-card-pad-l) !important;
     transform: translateY(var(--t27pp-card-offset-y));
@@ -428,11 +431,12 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
 
   /* Logo: stop desktop translate, make it reliably visible on tablet portrait */
   .logo-inline{
-    position: absolute;
-    top: var(--t27pp-logo-top);
-    right: var(--t27pp-logo-right);
+    position: relative;
+    top: auto;
+    right: auto;
     height: var(--t27pp-logo-h);
     width: auto;
+    margin-left: 24px;
     transform: none;
     pointer-events: none;
   }
@@ -1520,9 +1524,21 @@ Privacy Policy (DE) – Split-screen / Short-height window (461–699px tall) �
   and (min-height: 461px) and (max-height: 699px){
 
   html, body{
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
+    height: auto !important;
+    min-height: 100%;
+    overflow-y: auto !important;
+    overscroll-behavior: auto;
+  }
+  /* White-striped background for landscape */
+  html{
+    background-color: #f7f9fc;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #f7f9fc,
+      #f7f9fc 18px,
+      #e2e8f0 18px,
+      #e2e8f0 20px
+    );
   }
 
   :root{
@@ -1603,11 +1619,12 @@ Privacy Policy (DE) – Split-screen / Short-height window (461–699px tall) �
 
   .policy-card{
     width: var(--pp-card-w) !important;
-    max-height: none !important;
+    max-height: var(--pp-card-max-h) !important;
     border-radius: var(--pp-card-radius)!important;
     padding: var(--pp-card-pad-t) var(--pp-card-pad-r) var(--pp-card-pad-b) var(--pp-card-pad-l) !important;
-    transform: translateY(var(--pp-card-offset-y));
-    overflow: visible !important;
+    transform: translateY(var(--pp-offset-y));
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
   }
 
   .close-return-link{
@@ -2318,11 +2335,23 @@ Privacy Policy (DE) – Split-screen / Short-height window (461–699px tall) �
     --policy-logo-height: 26px;
   }
 
-  /* no outer scrolling */
+  /* allow natural page scroll */
   html, body{
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
+    height: auto !important;
+    min-height: 100%;
+    overflow-y: auto !important;
+    overscroll-behavior: auto;
+  }
+  /* White-striped background for landscape */
+  html{
+    background-color: #f7f9fc;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #f7f9fc,
+      #f7f9fc 18px,
+      #e2e8f0 18px,
+      #e2e8f0 20px
+    );
   }
 
   /* Make footer visible (no outer scroll, but footer stays on-screen) */
@@ -2352,9 +2381,9 @@ Privacy Policy (DE) – Split-screen / Short-height window (461–699px tall) �
     padding: 12px 14px 14px;
     padding-right: 12px;
 
-    max-height: var(--pp-card-max-h);
-    overflow-y: auto;
-    overflow-x: hidden;
+    max-height: var(--pp-card-max-h) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
