@@ -791,7 +791,16 @@ if (!function_exists('e')) {
 
     /* Footer: font-size knob */
     .site-footer{
+      position: fixed;
+      left: 0; right: 0;
+      bottom: 12px;
       font-size: var(--b1-fs-footer);
+      padding: 0 16px;
+      margin: 0;
+      transform: none;
+      line-height: 1.1;
+      z-index: 5;
+      pointer-events: none;
     }
 
     /* Flags: position + size knobs */

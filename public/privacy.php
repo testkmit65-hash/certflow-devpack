@@ -57,7 +57,7 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
 <html lang="<?= htmlspecialchars($lang, ENT_QUOTES, 'UTF-8') ?>">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
   <title><?= htmlspecialchars(t('title'), ENT_QUOTES, 'UTF-8') ?></title>
   <link rel="preload" as="image" href="/assets/img/landing-bg-desktop.webp" type="image/webp" fetchpriority="high">
   <link rel="preload" as="image" href="/assets/img/landing-bg-mobile.webp" type="image/webp" media="(max-width: 480px)" fetchpriority="high">
@@ -74,12 +74,18 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
       --card-offset-y: 27px;         /* + down / - up (card only) */
     }
 
+    /* White-striped background matching index.php and success.php */
     html{
-      background-color: var(--ink-blue);
-      background-image: url("../assets/img/landing-bg-desktop.webp"), var(--bg-lqip-desktop);
-      background-position: center center, center center;
-      background-size: cover, cover;
-      background-repeat: no-repeat, no-repeat;
+      background-color: #f7f9fc;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        #f7f9fc,
+        #f7f9fc 18px,
+        #e2e8f0 18px,
+        #e2e8f0 20px
+      );
     }
 
     body{
@@ -90,19 +96,35 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
       min-height:100vh;
       display:flex;
       flex-direction:column;
-      height:100vh;        /* lock body to viewport height on desktop */
-      overflow-y:hidden;   /* prevent scrolling on large screens */
+      overflow-x:hidden;
+      position:relative;
+      z-index:1;
+    }
+    @supports (min-height:100dvh){ body{ min-height:100dvh; } }
+
+    /* Portrait-only: lock body to exactly 100dvh so no spurious scroll appears */
+    @media (orientation: portrait) {
+      body{
+        height: 100vh;
+        overflow-y: hidden;
+      }
+      @supports (height:100dvh){ body{ height:100dvh; } }
     }
 
     .page-bg{
       position:fixed;
       inset:0;
-      background-color: var(--ink-blue);
-      background-image: url("../assets/img/landing-bg-desktop.webp"), var(--bg-lqip-desktop);
-      background-position: center center, center center;
-      background-size: cover, cover;
-      background-repeat: no-repeat, no-repeat;
-      z-index:-1;
+      width: 100%; height: 100vh;
+      height: 100dvh;
+      background-color: #f7f9fc;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        #f7f9fc,
+        #f7f9fc 18px,
+        #e2e8f0 18px,
+        #e2e8f0 20px
+      );
+      z-index:0; pointer-events:none; transform:translateZ(0);
     }
 
     /* Wrapper that centers the card between top and footer */
@@ -111,7 +133,10 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:32px 16px 24px; /* reduce bottom padding to avoid extra scroll */
+      padding:32px 16px 24px;
+      box-sizing:border-box;
+      position:relative;
+      z-index:1;
     }
 
     /* Card */
@@ -197,23 +222,23 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
     }
 
    @media (max-width: 720px){
-  /* allow scrolling again on small/mobile screens */
-  body{
-    height:auto;
-    overflow-y:auto;
-  }
-
+  /* allow inner card scroll on small screens; outer page stays locked */
   .layout{
-    padding:24px 12px 16px;
+    padding:16px 12px 16px;
+    align-items:center;
+    justify-content:center;
   }
   main{
     width:calc(100% - 24px);
+    max-width:540px;
+    margin:0 auto;
     padding:18px 16px 22px;
+    box-sizing:border-box;
   }
   .header-row{
-    flex-direction:column;
+    flex-direction:row;
     align-items:flex-start;
-    gap:12px;
+    gap:0;
   }
   .demo-logo{
     max-width:100px;
@@ -396,7 +421,7 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
 
   :root{
     /* --- Card size --- */
-    --card-w: calc(100vw - 32px);  /* adjustable width */
+    --card-w: calc(100vw - 40px);  /* adjustable width */
     --card-min-h: 520px;                 /* adjustable */
     --card-max-h: calc(100dvh - 120px);  /* adjustable: leaves room for footer/padding */
     --card-pad: 18px;              /* inner padding */
@@ -428,19 +453,26 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
     --title-right-reserve: 120px; /* reserve space so title doesn't run under logo */
 
     --layout-pad-top: 12px;    /* top padding around card */
-    --layout-pad-x: 12px;      /* left/right padding around card */
+    --layout-pad-x: 16px;      /* left/right padding around card */
     --gap-card-footer: 26px;   /* white box -> footer gap */
 
     --footer-bottom-pad: 15.5px; /* footer -> bottom edge of viewport */
   }
 
-  /* Match mobile background like Access/Success */
+  /* Match mobile background like index.php / success.php */
   html,
   .page-bg{
-    background-image: url('/assets/img/landing-bg-mobile.webp'), var(--bg-lqip-mobile);
-    background-position: center center, center center;
-    background-size: cover, cover;
-    background-repeat: no-repeat, no-repeat;
+    background-color: #f7f9fc;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #f7f9fc,
+      #f7f9fc 18px,
+      #e2e8f0 18px,
+      #e2e8f0 20px
+    );
+    background-position: unset;
+    background-size: unset;
+    background-repeat: unset;
   }
 
   /* Lock scrolling for this phone group (prevents click-drag page movement) */
@@ -535,10 +567,19 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
 
   /* Footer/footnote placement */
   .site-footer{
+    position: fixed;
+    left: 0; right: 0;
+    bottom: var(--footer-bottom-pad);
+
     font-size: var(--fs-footer);
-    padding: 0 12px var(--footer-bottom-pad);
-    line-height:1.2;
-    transform: translateY(0);
+    padding: 0 16px;
+    margin: 0;
+
+    transform: none;
+    line-height: 1.1;
+    z-index: 5;
+
+    pointer-events: none;
   }
 }
 
@@ -635,7 +676,7 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
   }
 }
 
-/* ---------------------------------------------------------------------
+/* ------------------------------------------------------------------------
   T28.3 — iPhone XR (414×896), PORTRAIT — Privacy info page
 ------------------------------------------------------------------------*/
 @media (orientation: portrait) and (width: 414px) and (height: 896px){
@@ -808,9 +849,9 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
 
   :root{
     /* Card sizing */
-    --card-w: calc(100vw - 28px);
+    --card-w: calc(100vw - 40px);
     --card-min-h: 460px;
-    --card-max-h: calc(100dvh - 104px);
+    --card-max-h: calc(100dvh - 140px);
     --card-pad: 16px;
 
     /* Typography */
@@ -835,7 +876,7 @@ $privacyLastUpdated = format_privacy_last_updated($lang);
     --footer-bottom-pad: 12px;
 
     /* Fine centering */
-    --t28p-pt-card-offset-y: 16px; /* + down / - up */
+    --t28p-pt-card-offset-y: 0px; /* + down / - up */
   }
 
   main{
@@ -859,27 +900,36 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
     --pm-card-offset-y: 0px; /* + down / - up */
   }
 
-  /* Use the dedicated mobile background, matching Access/Success */
+  /* Use white-striped background matching index.php / success.php */
   html,
   .page-bg{
-    background-image: url('/assets/img/landing-bg-mobile.webp'), var(--bg-lqip-mobile);
-    background-position: center center, center center;
-    background-size: cover, cover;
-    background-repeat: no-repeat, no-repeat;
+    background-color: #f7f9fc;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #f7f9fc,
+      #f7f9fc 18px,
+      #e2e8f0 18px,
+      #e2e8f0 20px
+    );
+    background-position: unset;
+    background-size: unset;
+    background-repeat: unset;
   }
 
-  /* Layout: tighter padding, card sits a bit higher */
+  /* Layout: tighter padding, card centered */
   .layout{
     padding:10px 10px 10px;
-    align-items:flex-start;
+    align-items:center;
+    justify-content:center;
   }
 
   /* Card: narrower, less padding, softer radius for phones */
   main{
     max-width:420px;
-    width:calc(100% - 28px);
+    width:calc(100% - 40px);
     padding:15px 14px 18px;
     border-radius:24px;
+    max-height: calc(100dvh - 140px);
     transform: translateY(var(--pm-card-offset-y));
   }
 
@@ -991,24 +1041,22 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
     --b1pi-ls-footer-reserve: 92px;
   }
 
-  /* stop “dragging” / panning */
+  /* Allow whole page scroll in landscape gap */
   html, body{
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
-  @supports (height: 100dvh){
-    body{ height: 100dvh; }
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: auto;
   }
 
   /* footer must NOT participate in layout centering */
   .layout{
-    height: 100vh;
+    min-height: 100vh;
     padding: 18px 16px 0;
     box-sizing: border-box;
   }
   @supports (height: 100dvh){
-    .layout{ height: 100dvh; }
+    .layout{ min-height: 100dvh; }
   }
 
   /* APPLY knobs to the ACTUAL card */
@@ -1022,15 +1070,10 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
     transform: translateY(var(--b1pi-ls-card-offset-y)) !important;
 
     min-height: var(--b1pi-ls-card-min-h) !important;
-    max-height: calc(100vh - var(--b1pi-ls-footer-reserve)) !important;
+    max-height: none !important;
 
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+    overflow-y: visible !important;
     box-sizing: border-box;
-  }
-  @supports (height: 100dvh){
-    main{ max-height: calc(100dvh - var(--b1pi-ls-footer-reserve)) !important; }
   }
 
   h1{
@@ -1108,7 +1151,8 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
     and (min-height: 361px) and (max-height: 460px) {
 
     /* prevent tiny rounding scroll + keep stable */
-    html, body{ overscroll-behavior: none; overflow-y: hidden; height: 100%; }
+    /* allow natural page scroll in landscape */
+    html, body{ overscroll-behavior: auto; overflow-y: auto; height: auto; min-height: 100%; }
 
     /* prevent background flicker on EN/DE soft swap (safe even if not used here) */
     html.demo-swap-freeze{ contain: none !important; }
@@ -1164,11 +1208,10 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
       transform: translateY(var(--pt-card-offset-y));
 
       /* card becomes the only scroll area if needed */
-      max-height: calc(100vh - 70px);  /* leaves room for footer */
-      overflow-y: auto;
+      /* allow natural page scroll */
+      max-height: none;
+      overflow-y: visible;
       overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior: contain;
 
       /* keep "Close and return" reliably at the bottom area */
       display: flex;
@@ -1245,20 +1288,21 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
     }
   }
 
-  /* center against FULL viewport (remove vertical padding influence) */
+  /* center against FULL viewport */
   .layout{
-    height: 100vh;
-    padding: 0 10px;                 /* keep small horizontal breathing room */
+    min-height: 100vh;
+    padding: 20px 10px;
     align-items: center;
     justify-content: center;
   }
   @supports (height: 100dvh){
-    .layout{ height: 100dvh; }
+    .layout{ min-height: 100dvh; }
   }
 
   /* apply the max-height knob + independent centering offset */
   main{
-    max-height: var(--t28x-ls-card-maxh);
+    max-height: none;
+    overflow-y: visible;
     transform: translateY(var(--t28x-ls-card-offset-y));
   }
 
@@ -1313,7 +1357,8 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
 
   /* apply max-height knob + independent centering offset */
   main{
-    max-height: var(--t28xr-ls-card-maxh);
+    max-height: none;
+    overflow-y: visible;
     transform: translateY(var(--t28xr-ls-card-offset-y));
   }
 
@@ -1361,7 +1406,7 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
   }
 
   /* stop page scroll; card can scroll internally if ever needed */
-  html, body{ overscroll-behavior: none; overflow: hidden; height: 100%; }
+  html, body{ overscroll-behavior: auto; overflow-y: auto; height: auto; min-height: 100%; }
 
   .layout{
     padding: var(--t284pm-ls-layout-pad);
@@ -1371,8 +1416,8 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
 
   /* card */
   main{
-    max-height: var(--t284pm-ls-card-maxh);
-    overflow: auto;
+    max-height: none;
+    overflow-y: visible;
     transform: translateY(var(--t284pm-ls-card-offset-y));
   }
 
@@ -1402,7 +1447,7 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
   and (min-height: 361px) and (max-height: 430px){
 
   /* lock outer scroll; card becomes the only scroll area if needed */
-  html, body{ overscroll-behavior: none; overflow-y: hidden; height: 100%; }
+  html, body{ overscroll-behavior: auto; overflow-y: auto; height: auto; min-height: 100%; }
 
   :root{
     /* ===== knobs ===== */
@@ -1454,8 +1499,8 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
     border-radius: var(--t28pi-card-radius);
     box-sizing: border-box;
 
-    max-height: calc(100vh - var(--t28pi-footer-reserve));
-    overflow-y: auto;
+    max-height: none;
+    overflow-y: visible;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
@@ -1526,7 +1571,9 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
   /* LOCK OUTER SCROLL (no page movement) */
   html, body{
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
+    height: auto;
+    min-height: 100%;
     overscroll-behavior: none;
   }
 
@@ -1544,12 +1591,10 @@ Extra-small phones (e.g. iPhone SE 320×568 – portrait only)
     border-radius: 24px;
     padding: 12px 14px 14px;
 
-    max-height: calc(100vh - 90px); /* leave room for footer */
-    overflow-y: auto;
+    max-height: none;
+    overflow-y: visible;
     overflow-x: hidden;
 
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
     transform: translateY(var(--card-offset-y));
   }
 

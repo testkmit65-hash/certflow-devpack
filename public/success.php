@@ -561,8 +561,16 @@ $backHref = '/index.php';
   }
 
   .site-footer{
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 12px;
     font-size: var(--b1s-footer-fs);
-    --footer-raise: var(--b1s-footer-raise);
+    padding: 0 16px;
+    margin: 0;
+    transform: none;
+    line-height: 1.1;
+    z-index: 5;
+    pointer-events: none;
   }
 }
 
@@ -713,8 +721,19 @@ $backHref = '/index.php';
   }
 
   .site-footer{
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 12px;
+
     font-size: 12px;
-    padding: 14px 8px 12px;
+    padding: 0 16px;
+    margin: 0;
+
+    transform: none;
+    line-height: 1.1;
+    z-index: 5;
+
+    pointer-events: none;
   }
 }
 
