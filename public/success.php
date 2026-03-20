@@ -245,9 +245,20 @@ $backHref = '/index.php';
   body{
     font-family:Helvetica,Arial,sans-serif; margin:0; padding:0;
     min-height:100vh; background:transparent; color:#fff;
-    display:flex; flex-direction:column; overflow-x:hidden; position:relative; z-index:1;
+    display:flex; flex-direction:column;
+    overflow-x:hidden; overflow-y:auto;
+    position:relative; z-index:1;
   }
   @supports (min-height:100dvh){ body{ min-height:100dvh; } }
+
+  /* Portrait-only: lock the body to exactly 100dvh so no spurious scroll appears */
+  @media (orientation: portrait) {
+    body{
+      height: 100vh;
+      overflow-y: hidden;
+    }
+    @supports (height:100dvh){ body{ height:100dvh; } }
+  }
 
   .page-bg{
     position:fixed; inset:0;
@@ -264,9 +275,9 @@ $backHref = '/index.php';
     z-index:0; pointer-events:none; transform:translateZ(0);
   }
 
-  .page-shell{ min-height:100vh; display:block; }
+  .page-shell{ flex:1 1 auto; display:flex; flex-direction:column; }
   .page-center{
-    min-height: calc(100vh - 110px);
+    flex:1 1 auto;
     display:grid; place-items:center;
     padding:16px; box-sizing:border-box; position:relative; z-index:1;
   }
@@ -316,10 +327,10 @@ $backHref = '/index.php';
   .card-watermark{ position:absolute; right:18px; bottom:18px; height:65px; width:auto; opacity:.9; filter:drop-shadow(0 1px 2px rgba(0,0,0,.35)); pointer-events:none; user-select:none; }
 
   .site-footer{
-    text-align:center; padding:12px 16px 24px;
+    flex-shrink:0;
+    text-align:center; padding:12px 16px 14px;
     color:#fff; font-weight:700; font-size:22px; line-height:1.2;
     text-shadow:0 1px 2px rgba(0,0,0,.25); z-index:1;
-    transform: translateY(var(--footer-raise)); will-change: transform;
   }
 
 /*--------------------------------------------------------
@@ -644,28 +655,14 @@ $backHref = '/index.php';
   }
 
   .page-center{
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: calc(100vh - 56px);
+    justify-content: center;
     padding: 0 12px 6px;
     box-sizing: border-box;
-  }
-
-  .page-center::before,
-  .page-center::after {
-    content: "";
-    display: block;
-    flex-grow: 1;
-  }
-
-  .page-center::before {
-    min-height: 40px;
-    flex-shrink: 0;
-  }
-
-  @supports (min-height:100dvh){
-    .page-center{ min-height: calc(100dvh - 56px); }
+    overflow: hidden;
   }
 
   .success-card{
@@ -717,8 +714,7 @@ $backHref = '/index.php';
 
   .site-footer{
     font-size: 12px;
-    padding: 25px 8px 12px;
-    transform: translateY(0);
+    padding: 14px 8px 12px;
   }
 }
 
@@ -963,28 +959,21 @@ $backHref = '/index.php';
     }
 
     .page-shell{
-      min-height: 100vh;
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     .page-center{
+      flex: 1 1 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: calc(100vh - 40px);     /* leaves room for footer line */
+      justify-content: center;
       padding: 0 8px 8px;
       box-sizing: border-box;
-    }
-
-    .page-center::before,
-    .page-center::after {
-      content: "";
-      display: block;
-      flex-grow: 1;
-    }
-
-    .page-center::before {
-      min-height: 20px;
-      flex-shrink: 0;
+      overflow: hidden;
     }
 
     .success-card{
@@ -1046,7 +1035,7 @@ $backHref = '/index.php';
     .site-footer{
       font-size: 12px;
       padding: 10px 8px 10px;
-      transform: translateY(0);  /* no extra lift on SE */
+      transform: none;  /* no extra lift on SE */
     }
   }
 
@@ -1868,7 +1857,7 @@ $backHref = '/index.php';
     .site-footer{
       font-size: 12px;
       padding: 0px 8px 10px;
-      transform: translateY(0);  /* no extra lift on SE */
+      transform: none;  /* no extra lift on SE */
     }
 
     /* If a flash message shows, keep it from eating the whole screen */
