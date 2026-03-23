@@ -285,9 +285,6 @@ if (!function_exists('e')) {
     z-index: 1; /* normal state: flags can sit above if they need to */
   }
 
-  .page-center.processing-active{
-    z-index: 20; /* only while overlay is active: above .lang-switch (z:10) and footer */
-  }
 
   .access-card{
     position:relative;
@@ -296,7 +293,7 @@ if (!function_exists('e')) {
     background: rgba(15, 53, 88, 0.70);
     padding: var(--card-pad);
     padding-bottom: calc(var(--card-pad) + var(--btn-reserved)); /* reserve space for pinned button */
-    transform: translateY(var(--card-offset-y));
+    margin-top: var(--card-offset-y);
     box-sizing: border-box;
     box-shadow: 0 10px 50px rgba(0,0,0,.20);
     isolation: isolate;
@@ -321,7 +318,7 @@ if (!function_exists('e')) {
   .title{
     margin: 0 0 var(--gap-title-intro) 0;
     text-align:center; color:var(--white);
-    font-weight:700; font-size: var(--fs-title); line-height:1.1; letter-spacing:.2px;
+    font-weight:700; font-size: var(--fs-title); letter-spacing:.2px;
   }
   .intro{
     margin: 0 0 var(--gap-intro-form) 0;
@@ -402,7 +399,16 @@ if (!function_exists('e')) {
 
   .btn-submit{
     width:175px; height:70px; background: var(--ink-orange); border: 2pt solid var(--ink-blue); border-radius:6px;
-    color:#fff; font-weight:700; font-size: var(--fs-btn); line-height:65px; text-align:center; cursor:pointer; display:inline-block;
+    color:#fff; font-weight:700; font-size: var(--fs-btn);
+    /* Use grid for rock-solid centering — immune to Safari UA styles */
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+    -webkit-appearance: none;
+    line-height: 1;
     transition: transform .08s ease, box-shadow .08s ease;
     position: relative; z-index: 4;
   }
@@ -521,14 +527,26 @@ if (!function_exists('e')) {
 
   /* Make centering behave consistently */
   .page-center{
-    min-height: calc(100svh - var(--t27-footer-space));
     min-height: calc(100vh  - var(--t27-footer-space)); /* fallback */
+    min-height: calc(100svh - var(--t27-footer-space));
     display: grid;
     place-items: center;
   }
 
+  /* Footer: fixed so it never contributes to document height */
+  .site-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none !important;
+    padding-bottom: 24px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
   .access-card{
-    transform: translateY(var(--t27-card-offset-y));
+    margin-top: var(--t27-card-offset-y);
   }
 
   /* Heading/subheading gap is already controlled by variables above.
@@ -586,26 +604,115 @@ if (!function_exists('e')) {
     width: var(--t27-btn-w);
     height: var(--t27-btn-h);
     font-size: var(--t27-fs-btn);
-    line-height: calc(var(--t27-btn-h) - 4px);
     border: 1.5pt solid var(--ink-blue);
-    border-radius:6px;
+    border-radius: 6px;
+    display: inline-grid !important;
+    place-items: center !important;
+    -webkit-appearance: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+  }
+
+  /* ── Tablet landscape: iOS-proof scroll lock ── */
+  @media (orientation: landscape) {
+
+    /* Perfect Vertical Centering: reset offsets and use full viewport */
+    :root {
+      --t27-footer-space: 100px;
+      --t27-card-offset-y: 0px; 
+    }
+
+    /* position:fixed on html is the ONLY reliable way to kill scroll on iOS Safari */
+    html {
+      position: fixed !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: hidden !important;
+    }
+    body {
+      position: relative !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: hidden !important;
+      overscroll-behavior: none !important;
+    }
+
+    .page-center {
+      min-height: 0 !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+      display: grid !important;
+      place-items: center !important;
+    }
+
+    /* Cap card so it never overflows the locked viewport */
+    .access-card {
+      max-height: calc(100vh  - 120px) !important;
+      max-height: calc(100dvh - 120px) !important;
+      margin-top: 0 !important;
+      transform: none !important;
+    }
+  }
+}
+/* ─────────────────────────────────────────────────────────────────
+   TABLET LANDSCAPE — standalone scroll lock (no min-height gate)
+   Covers iPad Air / mini landscape regardless of DevTools/chrome
+   ───────────────────────────────────────────────────────────────── */
+@media (min-width: 700px) and (max-width: 1600px) and (min-height: 600px) and (orientation: landscape) {
+  html {
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+  body {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+  }
+
+  /* Zero out the base min-height so it can never force the page taller */
+  .page-center {
+    min-height: 0 !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+  }
+  
+  
+  /* Lift the footer up from the very edge of the screen */
+  .site-footer {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 20px !important;
+    padding-bottom: 16px !important;
+    z-index: 1000 !important;
+    display: block !important; /* Ensure it's not hidden */
   }
 }
 
   /* Processing overlay (T13) */
   .processing-overlay{
-    position: fixed;
-    inset: 0;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important; 
+    right: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
     background: rgba(4, 10, 20, 0.78);
-    z-index: 12000; /* above flags, footer & other UI */
+    z-index: 2147483647 !important; /* maximum possible z-index */
     box-sizing: border-box;
+    overflow: hidden;
+    pointer-events: none;
   }
   .processing-overlay.is-visible{
-    display: flex;
+    display: block !important;
+    pointer-events: auto;
   }
   
 /* Block interactions + scrolling while processing overlay is visible */
@@ -625,10 +732,13 @@ if (!function_exists('e')) {
   .processing-overlay.is-visible{ pointer-events: auto; }
 
   .processing-card{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) !important;
     max-width: 480px;
-    width: 100%;
-    max-height: calc(100dvh - 32px); /* ensure it fits on small phones */
-    max-height: calc(100vh - 32px);  /* fallback */
+    width: 90%;
+    max-height: calc(100% - 32px); 
     overflow-y: auto; /* allow scroll if it still exceeds */
     overscroll-behavior: contain;
     background: rgba(8, 18, 35, 0.96);
@@ -781,10 +891,7 @@ if (!function_exists('e')) {
       width: var(--b1-btn-w);
       height: var(--b1-btn-h);
       font-size: var(--b1-fs-btn);
-      line-height: var(--b1-btn-line);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-grid; place-items: center; -webkit-appearance: none;
       border: 1.5pt solid var(--ink-blue);
       border-radius:6px;
     }
@@ -942,9 +1049,7 @@ if (!function_exists('e')) {
     .btn-submit{
       width: 120px;   /* adjust if you want it narrower/wider */
       height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-grid; place-items: center; -webkit-appearance: none;
       line-height: 1.1;
       border: 1.5pt solid var(--ink-blue);
       border-radius:6px;
@@ -1034,7 +1139,7 @@ if (!function_exists('e')) {
   }
 
   .access-card{
-    transform: translateY(var(--t28-card-offset-y));
+    margin-top: var(--t28-card-offset-y);
     border-radius: 24px;
   }
 
@@ -1080,7 +1185,7 @@ if (!function_exists('e')) {
     }
 
     .access-card{
-      transform: translateY(var(--t28x-card-offset-y));
+      margin-top: var(--t28x-card-offset-y);
     }
   }
 
@@ -1107,7 +1212,7 @@ if (!function_exists('e')) {
     }
 
     .access-card{
-      transform: translateY(var(--t28xr-card-offset-y));
+      margin-top: var(--t28xr-card-offset-y);
     }
   }
 
@@ -1143,7 +1248,7 @@ if (!function_exists('e')) {
     }
 
     .access-card{
-      transform: translateY(var(--t284-card-offset-y));
+      margin-top: var(--t284-card-offset-y);
     }
   }
 
@@ -1186,7 +1291,7 @@ if (!function_exists('e')) {
     }
     /* Move the entire card (and everything inside it) slightly down */
     .access-card{
-      transform: translateY(var(--card-offset-y-se));
+      margin-top: var(--card-offset-y-se);
     }
 
     /* Bring the title closer to the top edge of the card */
@@ -1441,10 +1546,7 @@ if (!function_exists('e')) {
       width: var(--b1ls-btn-w);
       height: var(--b1ls-btn-h);
       font-size: var(--b1ls-fs-btn);
-      line-height: var(--b1ls-btn-line);
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display: inline-grid; place-items: center; -webkit-appearance: none;
       border: 1.5pt solid var(--ink-blue);
       border-radius:6px;
     }
@@ -1504,8 +1606,8 @@ if (!function_exists('e')) {
   /* Center card independently from footer */
   .page-center{
     min-height: 0;
-    height: calc(100svh - var(--ch9f720-ls-footer-space));
     height: calc(100vh  - var(--ch9f720-ls-footer-space)); /* fallback */
+    height: calc(100svh - var(--ch9f720-ls-footer-space));
     /* keep existing bridge padding feel */
     padding: var(--ls-top-band) 10px 10px;
 
@@ -1523,9 +1625,7 @@ if (!function_exists('e')) {
     height: var(--ch9f720-ls-footer-h);
     padding: 0;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-grid; place-items: center; -webkit-appearance: none;
 
     transform: translateY(var(--ch9f720-ls-footer-offset-y));
     z-index: 5;
@@ -1630,7 +1730,7 @@ if (!function_exists('e')) {
       border-radius: 24px;
       padding: var(--card-pad);
       padding-bottom: calc(var(--card-pad) + var(--btn-reserved));
-      transform: translateY(var(--card-offset-y));
+      margin-top: var(--card-offset-y);
     }
 
     .title{ margin-top: 0px; }
@@ -1703,9 +1803,7 @@ if (!function_exists('e')) {
       font-size: var(--fs-btn);
       border: 1.5pt solid var(--ink-blue);
       border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-grid; place-items: center; -webkit-appearance: none;
       line-height: 1;
     }
 
@@ -1854,8 +1952,8 @@ if (!function_exists('e')) {
 
   /* True centering box (more stable on mobile than min-height) */
   .page-center{
-    height: calc(100svh - var(--footer-space));
-    height: calc(100vh  - var(--footer-space)); /* fallback */
+    height: calc(100svh - var(--footer-space)); /* fallback */
+    height: calc(100vh  - var(--footer-space));
     padding: var(--t28-ls-pad-y) var(--t28-ls-pad-x);
     box-sizing: border-box;
     display: grid;
@@ -1869,7 +1967,7 @@ if (!function_exists('e')) {
     padding: var(--card-pad);
     padding-bottom: calc(var(--card-pad) + var(--btn-reserved));
     overflow: hidden;
-    transform: translateY(var(--t28-ls-card-offset-y));
+    margin-top: var(--t28-ls-card-offset-y);
     border-radius: 24px;
   }
 
@@ -1901,9 +1999,7 @@ if (!function_exists('e')) {
     line-height: 1;
     border: 1.5pt solid var(--ink-blue);
     border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-grid; place-items: center; -webkit-appearance: none;
   }
 
   .lang-switch a img{ width: 40px; height: 26px; }
@@ -1917,9 +2013,7 @@ if (!function_exists('e')) {
     bottom: 0;
     height: var(--t28-ls-footer-h);
     padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-grid; place-items: center; -webkit-appearance: none;
     font-size: 12px;
     line-height: 1;
     transform: none;
@@ -1971,8 +2065,8 @@ if (!function_exists('e')) {
     }
 
     .page-center{
-      height: calc(100svh - var(--footer-space));
-      height: calc(100vh  - var(--footer-space)); /* fallback */
+      height: calc(100svh - var(--footer-space)); /* fallback */
+      height: calc(100vh  - var(--footer-space));
       padding: var(--t28x-ls-pad-y) var(--t28x-ls-pad-x);
       box-sizing: border-box;
       display: grid;
@@ -1986,7 +2080,7 @@ if (!function_exists('e')) {
       padding: var(--card-pad);
       padding-bottom: calc(var(--card-pad) + var(--btn-reserved));
       overflow: hidden;
-      transform: translateY(var(--t28x-ls-card-offset-y));
+      margin-top: var(--t28x-ls-card-offset-y);
       border-radius: 24px;
     }
 
@@ -2011,9 +2105,7 @@ if (!function_exists('e')) {
       left: 0; right: 0; bottom: 0;
       height: var(--t28x-ls-footer-h);
       padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-grid; place-items: center; -webkit-appearance: none;
       font-size: 12px;
       line-height: 1;
       transform: translateY(var(--t28x-ls-footer-offset-y));
@@ -2064,8 +2156,8 @@ if (!function_exists('e')) {
 
     /* True centering box */
     .page-center{
-      height: calc(100svh - var(--footer-space));
-      height: calc(100vh  - var(--footer-space)); /* fallback */
+      height: calc(100svh - var(--footer-space)); /* fallback */
+      height: calc(100vh  - var(--footer-space));
       padding: var(--t28xr-ls-pad-y) var(--t28xr-ls-pad-x);
       box-sizing: border-box;
       display: grid;
@@ -2079,7 +2171,7 @@ if (!function_exists('e')) {
       padding: var(--card-pad);
       padding-bottom: calc(var(--card-pad) + var(--btn-reserved));
       overflow: hidden;
-      transform: translateY(var(--t28xr-ls-card-offset-y));
+      margin-top: var(--t28xr-ls-card-offset-y);
       border-radius: 24px;
     }
 
@@ -2104,9 +2196,7 @@ if (!function_exists('e')) {
       left: 0; right: 0; bottom: 0;
       height: var(--t28xr-ls-footer-h);
       padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-grid; place-items: center; -webkit-appearance: none;
       font-size: 12px;
       line-height: 1;
       transform: translateY(var(--t28xr-ls-footer-offset-y));
@@ -2141,8 +2231,8 @@ if (!function_exists('e')) {
 
     /* True centering box */
     .page-center{
-      height: calc(100svh - var(--footer-space));
-      height: calc(100vh  - var(--footer-space)); /* fallback */
+      height: calc(100svh - var(--footer-space)); /* fallback */
+      height: calc(100vh  - var(--footer-space));
       padding: var(--t284pm-ls-pad-y) var(--t284pm-ls-pad-x);
       box-sizing: border-box;
       display: grid;
@@ -2153,7 +2243,7 @@ if (!function_exists('e')) {
       height: var(--card-h); /* FIXED */
       max-height: calc(100svh - var(--footer-space) - (2 * var(--t284pm-ls-pad-y)));
       overflow: hidden;
-      transform: translateY(var(--t284pm-ls-card-offset-y));
+      margin-top: var(--t284pm-ls-card-offset-y);
     }
 
     /* Fixed footer */
@@ -2162,9 +2252,7 @@ if (!function_exists('e')) {
       left: 0; right: 0; bottom: 0;
       height: var(--t284pm-ls-footer-h);
       padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-grid; place-items: center; -webkit-appearance: none;
       font-size: 12px;
       line-height: 1;
       transform: translateY(var(--t284pm-ls-footer-offset-y));
@@ -2196,8 +2284,8 @@ if (!function_exists('e')) {
   /* Center the card, independent from footer */
   .page-center{
     min-height: 0 !important;
-    height: calc(100svh - var(--t285s8-ls-footer-space)) !important;
     height: calc(100vh  - var(--t285s8-ls-footer-space)) !important; /* fallback */
+    height: calc(100svh - var(--t285s8-ls-footer-space)) !important;
     padding: var(--t285s8-ls-pad-y) var(--t285s8-ls-pad-x) !important;
     display: grid !important;
     place-items: center !important;
@@ -2249,8 +2337,8 @@ if (!function_exists('e')) {
   /* Center the card, independent from footer */
   .page-center{
     min-height: 0;
-    height: calc(100svh - var(--ch9a51-ls-footer-space));
     height: calc(100vh  - var(--ch9a51-ls-footer-space)); /* fallback */
+    height: calc(100svh - var(--ch9a51-ls-footer-space));
     padding: var(--ch9a51-ls-pad-y) var(--ch9a51-ls-pad-x);
     display: grid;
     place-items: center;
@@ -2266,9 +2354,7 @@ if (!function_exists('e')) {
     height: var(--ch9a51-ls-footer-h);
     padding: 0;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-grid; place-items: center; -webkit-appearance: none;
 
     transform: translateY(var(--ch9a51-ls-footer-offset-y));
     z-index: 5;
@@ -2301,8 +2387,8 @@ if (!function_exists('e')) {
   /* Center the card, independent from footer */
   .page-center{
     min-height: 0;
-    height: calc(100svh - var(--t286s20-ls-footer-space));
     height: calc(100vh  - var(--t286s20-ls-footer-space)); /* fallback */
+    height: calc(100svh - var(--t286s20-ls-footer-space));
     padding: var(--t286s20-ls-pad-y) var(--t286s20-ls-pad-x);
     display: grid;
     place-items: center;
@@ -2318,9 +2404,7 @@ if (!function_exists('e')) {
     height: var(--t286s20-ls-footer-h);
     padding: 0;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-grid; place-items: center; -webkit-appearance: none;
 
     transform: translateY(var(--t286s20-ls-footer-offset-y));
     z-index: 5;
@@ -2460,9 +2544,7 @@ if (!function_exists('e')) {
       height: var(--actions-h);
       font-size: var(--fs-btn);
       border: 1.5pt solid var(--ink-blue);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-grid; place-items: center; -webkit-appearance: none;
       line-height: 1;
     }
 
@@ -2509,10 +2591,14 @@ if (!function_exists('e')) {
   /* ====== GLOBAL LANDSCAPE OVERRIDE: ALLOW SCROLLING & FIX TYPOGRAPHY ====== */
   @media (orientation: landscape) and (max-height: 600px) {
     html:not(.processing-lock), body:not(.processing-lock) {
-      overflow-y: auto !important;
+      overflow-y: visible !important; /* MUST be visible, not auto, to restore native Android scroll */
       overflow-x: hidden !important;
       height: auto !important;
       min-height: 100vh !important;
+      position: static !important; /* Force reset from any tablet fixed states */
+    }
+    body:not(.processing-lock) {
+      position: relative !important;
     }
     
     .processing-card {
@@ -2596,7 +2682,7 @@ if (!function_exists('e')) {
       display: flex !important;
       justify-content: center !important;
     }
-    .btn-submit { font-size: 22px !important; height: 50px !important; line-height: 50px !important; width: 140px !important; }
+    .btn-submit { font-size: 22px !important; height: 50px !important; width: 140px !important; display: inline-grid !important; place-items: center !important; -webkit-appearance: none !important; padding: 0 !important; line-height: 1 !important; }
     .fs-small, .notice, .helper, .inline-msg { font-size: 11px !important; }
     .notice { margin: 8px 0 24px 0 !important; line-height: 1.35 !important; }
     .card-watermark {
@@ -2678,7 +2764,13 @@ if (!function_exists('e')) {
     <img class="card-watermark" src="/assets/img/logo.svg" alt="" aria-hidden="true">
   </div>
 
-  <!-- OVERLAY NOW OUTSIDE THE CARD, STILL INSIDE .page-center -->
+</div>
+
+  <footer class="site-footer" role="contentinfo">
+    Copyright <?= (string)COPYRIGHT_YEAR ?> <?= e(BRAND_NAME) ?>, All rights reserved.
+  </footer>
+
+  <!-- PROCESSING OVERLAY (Top Level) -->
   <div id="processingOverlay" class="processing-overlay" aria-hidden="true">
     <div class="processing-card" role="status" aria-live="polite">
       <h2><?= t('overlay.heading') ?></h2>
@@ -2686,11 +2778,6 @@ if (!function_exists('e')) {
       <div class="processing-spinner" aria-hidden="true"></div>
     </div>
   </div>
-</div>
-
-  <footer class="site-footer" role="contentinfo">
-    Copyright <?= (int)COPYRIGHT_YEAR ?> <?= e(BRAND_NAME) ?>, All rights reserved.
-  </footer>
 
   <script>
     // Basic texts for inline validation (fallback = initial page language)
@@ -3004,187 +3091,96 @@ function getL() {
 
     function activateProcessingOverlay() {
       const overlay = document.getElementById('processingOverlay');
-      if (!overlay) return null;
+      if (!overlay) return;
 
       overlay.classList.add('is-visible');
       overlay.setAttribute('aria-hidden', 'false');
-
       document.documentElement.classList.add('processing-lock');
       document.body.classList.add('processing-lock');
 
-      // Lift the whole card layer above flags & footer while processing
       const pageCenter = document.querySelector('.page-center');
       if (pageCenter) pageCenter.classList.add('processing-active');
-
-      return overlay;
     }
 
+    // Chapter_16: prevent Chrome/Non-Safari flicker on fast server-side rejections
+    function activateProcessingOverlayNonSafari() {
+      if (nonSafariPrecheckInFlight) return;
+      nonSafariPrecheckInFlight = true;
+
+      // If the server responds quickly, we don't want to show the overlay at all.
+      // We'll cancel this if the server responds within 650ms.
+      overlayTimer = setTimeout(() => {
+        activateProcessingOverlay();
+        nonSafariPrecheckInFlight = false; // Reset after activation
+      }, 650);
+    }
+
+    // Chapter_16: Safari needs immediate paint, others get a comfortable delay
     document.addEventListener('submit', function (e) {
       if (!e.target || !e.target.closest) return;
       const form = e.target.closest('form#claimForm');
       if (!form) return;
 
-      // If client-side validation prevented submission, do nothing.
-      if (e.defaultPrevented) {
-        if (overlayTimer !== null) {
-          clearTimeout(overlayTimer);
-          overlayTimer = null;
-        }
-        return;
-      }
+      if (e.defaultPrevented) return;
 
-      if (overlayTimer !== null) {
-        clearTimeout(overlayTimer);
-        overlayTimer = null;
-      }
+      const isSaf = isSafari();
 
-      // Chapter_16: Non-Safari precheck gate (prevents POST→302→GET reload flicker on wrong-but-valid key / cooldown)
-      // We run the same server-side fast checks as Safari, but for Chrome/others too.
-      if (!isSafari()) {
-      // If we triggered a follow-up submit via requestSubmit(), allow it through once.
-        if (form.dataset && form.dataset.precheckOk === '1') {
-          delete form.dataset.precheckOk;
-        } else {
-          e.preventDefault();
+      if (isSaf) {
+        // Safari: activate immediately, force paint, then submit
+        if (safariPrecheckInFlight) return;
+        safariPrecheckInFlight = true;
 
-          if (!document.body.contains(form)) return;
-
-          if (nonSafariPrecheckInFlight) return;
-          nonSafariPrecheckInFlight = true;
-
-          const fd = new FormData(form);
-
-          fetch('precheck.php', {
-            method: 'POST',
-            body: fd,
-            credentials: 'same-origin',
-            headers: { 'X-Requested-With': 'fetch' }
-          })
-          .then(function (res) {
-            return res.json().catch(function () { return null; })
-              .then(function (data) { return { res: res, data: data }; });
-          })
-          .then(function (pack) {
-            nonSafariPrecheckInFlight = false;
-            const data = pack && pack.data ? pack.data : null;
-
-            if (!data || data.ok !== true) {
-              const L = (typeof getL === 'function') ? getL() : { secret: 'Invalid or missing Secret Key Code, please try again.' };
-              const msg = (data && typeof data.error === 'string' && data.error) ? data.error : L.secret;
-              showInlineMessage(form, msg);
-              return;
-            }
-
-            // Clear any previous inline error
-            showInlineMessage(form, '');
-
-            // Mark as prechecked so the next submit can proceed normally (and keep the existing non-Safari overlay delay logic)
-            if (form.dataset) form.dataset.precheckOk = '1';
-
-            // Trigger native submit flow again (this time we don't block it)
-            if (typeof form.requestSubmit === 'function') {
-              form.requestSubmit();
-            } else {
-              // Fallback: submit directly (older browsers). Overlay delay may be skipped, but no flicker.
-              form.submit();
-            }
-          })
-          .catch(function () {
-            nonSafariPrecheckInFlight = false;
-            // If precheck fails unexpectedly, fall back to existing behavior (submit)
-            if (form.dataset) form.dataset.precheckOk = '1';
-            if (typeof form.requestSubmit === 'function') {
-              form.requestSubmit();
-            } else {
-              form.submit();
-            }
-          });
-
-          return;
-        }
-      }
-
-      // Chapter_11: Safari paint fix — ensure overlay is painted BEFORE the real navigation starts
-      if (isSafari()) {
-      e.preventDefault();
-
-      if (!document.body.contains(form)) return;
-
-      // Chapter_13: precheck server-side fast-return rejections (secret mismatch, cooldown)
-      // so Safari doesn't flash the overlay on an immediate redirect back to index.php.
-      if (safariPrecheckInFlight) return;
-      safariPrecheckInFlight = true;
-
-      const fd = new FormData(form);
-
-      fetch('precheck.php', {
-        method: 'POST',
-        body: fd,
-        credentials: 'same-origin',
-        headers: { 'X-Requested-With': 'fetch' }
-      })
-      .then(function (res) {
-        return res.json().catch(function () { return null; })
-          .then(function (data) { return { res: res, data: data }; });
-      })
-      .then(function (pack) {
-        safariPrecheckInFlight = false;
-        const data = pack && pack.data ? pack.data : null;
-
-        if (!data || data.ok !== true) {
-          const L = (typeof getL === 'function') ? getL() : { secret: 'Invalid or missing Secret Key Code, please try again.' };
-          const msg = (data && typeof data.error === 'string' && data.error) ? data.error : L.secret;
-          showInlineMessage(form, msg);
-          return;
-        }
-
-        const overlay = activateProcessingOverlay();
-        if (!overlay) return;
-
-        // Force style flush (cheap) and then allow one paint before submitting
-        void overlay.offsetHeight;
-
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            form.submit(); // native submit; does NOT re-trigger submit event
-          });
-        });
-      })
-      .catch(function () {
-        safariPrecheckInFlight = false;
-        // Fallback: preserve previous Safari behavior if precheck is unavailable
-        const overlay = activateProcessingOverlay();
-        if (!overlay) return;
-        void overlay.offsetHeight;
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
+        e.preventDefault();
+        activateProcessingOverlay();
+        // Force paint before native submit
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
             form.submit();
           });
         });
-      });
+        return;
+      }
 
-      return;
-    }
-
-      // Non-Safari: keep existing behavior (anti-flash delay)
-      overlayTimer = window.setTimeout(function () {
-        const currentForm = document.querySelector('form#claimForm');
-        if (!currentForm || !document.body.contains(currentForm)) return;
-
-        const overlay = document.getElementById('processingOverlay');
-        if (!overlay) return;
-
-        overlay.classList.add('is-visible');
-        overlay.setAttribute('aria-hidden', 'false');
-        document.documentElement.classList.add('processing-lock');
-        document.body.classList.add('processing-lock');
-
-        const pageCenter = document.querySelector('.page-center');
-        if (pageCenter) {
-          pageCenter.classList.add('processing-active');
-        }
-      }, 650);
+      // Non-Safari: activate with a delay
+      activateProcessingOverlayNonSafari();
     }, false);
+
+    // Chapter_16: cancel overlay if server responds quickly
+    document.addEventListener('DOMContentLoaded', function () {
+      // This will run after the server-side redirect, if any.
+      // If we're still on the same page, it means the server didn't redirect.
+      // If the overlay timer is active, clear it.
+      if (overlayTimer) {
+        clearTimeout(overlayTimer);
+        overlayTimer = null;
+        nonSafariPrecheckInFlight = false;
+      }
+      safariPrecheckInFlight = false; // Reset for next submission
+    });
+
+    // Chapter_16: clear overlay on pageshow (e.g., back button)
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted) {
+        // Page was restored from bfcache, ensure overlay is hidden
+        const overlay = document.getElementById('processingOverlay');
+        if (overlay) {
+          overlay.classList.remove('is-visible');
+          overlay.setAttribute('aria-hidden', 'true');
+        }
+        document.documentElement.classList.remove('processing-lock');
+        document.body.classList.remove('processing-lock');
+        const pageCenter = document.querySelector('.page-center');
+        if (pageCenter) pageCenter.classList.remove('processing-active');
+
+        // Also clear any pending timers
+        if (overlayTimer) {
+          clearTimeout(overlayTimer);
+          overlayTimer = null;
+        }
+        nonSafariPrecheckInFlight = false;
+        safariPrecheckInFlight = false;
+      }
+    });
   })();
 </script>
 
